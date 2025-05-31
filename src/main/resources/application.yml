@@ -1,0 +1,65 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: vthreadmq
+  
+  # WebFlux configuration
+  webflux:
+    base-path: /
+
+# Logging configuration
+logging:
+  level:
+    com.vthreadMQ001: DEBUG
+    org.springframework.web: INFO
+    reactor.netty: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Management endpoints for monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# VthreadMQ specific configuration
+vthreadmq:
+  database:
+    path: "data/vthreadmq.db"
+  
+  # Virtual thread pool configuration
+  virtual-threads:
+    max-pool-size: 1000
+    core-pool-size: 10
+  
+  # Message processing configuration
+  processing:
+    batch-size: 100
+    timeout-ms: 30000
+    retry-delay-seconds: 60
+  
+  # Cleanup configuration
+  cleanup:
+    old-messages-retention-hours: 24
+    cleanup-interval-hours: 6
+  
+  # Plugin configuration
+  plugins:
+    email:
+      enabled: true
+      default-recipient: "admin@example.com"
+      default-subject-prefix: "[VthreadMQ]" 
