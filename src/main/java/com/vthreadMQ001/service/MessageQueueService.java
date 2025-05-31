@@ -60,9 +60,9 @@ public class MessageQueueService {
             .description("Total number of failed messages")
             .register(meterRegistry);
             
-        Gauge.builder("vthreadmq_active_virtual_threads")
+        Gauge.builder("vthreadmq_active_virtual_threads", activeVirtualThreads, AtomicInteger::get)
             .description("Number of active virtual threads")
-            .register(meterRegistry, activeVirtualThreads, AtomicInteger::get);
+            .register(meterRegistry);
             
         // Initialize scheduled executor for background tasks
         scheduledExecutor = Executors.newScheduledThreadPool(2);

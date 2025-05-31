@@ -1,6 +1,6 @@
 plugins {
 	java
-	id("org.springframework.boot") version "4.0.0-SNAPSHOT"
+	id("org.springframework.boot") version "3.5.0"
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -21,15 +21,13 @@ configurations {
 
 repositories {
 	mavenCentral()
-	maven { url = uri("https://repo.spring.io/milestone") }
-	maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
 dependencies {
 	// Spring Boot WebFlux for reactive programming
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
-	implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
+	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-quartz")
 	
 	// WebSocket support

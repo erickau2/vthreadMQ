@@ -22,6 +22,7 @@ public class ProduceMessageRequest {
     private Map<String, Object> headers;
     private Long delaySec;
     private String scheduledAt; // ISO 8601 timestamp
+    @Builder.Default
     private int maxRetries = 3;
     private String consumerGroup;
 } 

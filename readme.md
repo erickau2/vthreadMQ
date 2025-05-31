@@ -87,6 +87,245 @@ docker run -p 8080:8080 -v $(pwd)/data:/app/data vthreadmq
 
 ---
 
+## Build & Run Commands
+
+### Build Commands
+
+```bash
+# Clean and build the project
+./gradlew clean build
+
+# Build without running tests (faster for development)
+./gradlew clean build -x test
+
+# Build only (without clean)
+./gradlew build
+
+# Create bootable JAR file
+./gradlew bootJar
+
+# Build with specific profile
+./gradlew build -Pspring.profiles.active=production
+```
+
+### Start Commands
+
+```bash
+# Run with Gradle (development with hot reload)
+./gradlew bootRun
+
+# Run the built JAR directly
+java -jar build/libs/vthreadmq-0.0.1-SNAPSHOT.jar
+
+# Run with specific profile
+java -jar -Dspring.profiles.active=production build/libs/vthreadmq-0.0.1-SNAPSHOT.jar
+
+# Run with custom port
+java -jar -Dserver.port=9090 build/libs/vthreadmq-0.0.1-SNAPSHOT.jar
+
+# Run with virtual threads enabled (explicit)
+java -jar -Dspring.threads.virtual.enabled=true build/libs/vthreadmq-0.0.1-SNAPSHOT.jar
+```
+
+### Docker Commands
+
+```bash
+# Build Docker image
+docker build -t vthreadmq .
+
+# Run with Docker
+docker run -p 8080:8080 vthreadmq
+
+# Run with volume mapping for data persistence
+docker run -p 8080:8080 -v $(pwd)/data:/app/data vthreadmq
+
+# Run with environment variables
+docker run -p 8080:8080 -e SPRING_PROFILES_ACTIVE=production vthreadmq
+
+# Docker Compose (includes Prometheus & Grafana)
+docker-compose up -d
+
+# View Docker Compose logs
+docker-compose logs -f
+
+# Stop Docker Compose
+docker-compose down
+
+# Rebuild and restart with Docker Compose
+docker-compose up -d --build
+```
+
+### Testing Commands
+
+```bash
+# Run all tests
+./gradlew test
+
+# Run tests with coverage report
+./gradlew test jacocoTestReport
+
+# Run specific test class
+./gradlew test --tests "MessageQueueServiceTest"
+
+# Run tests continuously (watch mode)
+./gradlew test --continuous
+
+# Integration tests only
+./gradlew integrationTest
+```
+
+### Development Commands
+
+```bash
+# Check code style and quality
+./gradlew check
+
+# Format code (if configured)
+./gradlew spotlessApply
+
+# Generate dependency report
+./gradlew dependencies
+
+# View project structure
+./gradlew projects
+
+# Clean build cache
+./gradlew clean
+
+# Refresh dependencies
+./gradlew --refresh-dependencies
+```
+
+### Health Check & Monitoring Commands
+
+```bash
+# Check application health
+curl http://localhost:8080/api/health
+
+# Get all actuator endpoints
+curl http://localhost:8080/actuator
+
+# Get application metrics
+curl http://localhost:8080/actuator/metrics
+
+# Get Prometheus metrics
+curl http://localhost:8080/actuator/prometheus
+
+# Get application info
+curl http://localhost:8080/actuator/info
+
+# Check specific metric
+curl http://localhost:8080/actuator/metrics/vthreadmq.messages.produced.total
+```
+
+### Database Commands
+
+```bash
+# Connect to SQLite database (requires sqlite3 client)
+sqlite3 data/vthreadmq.db
+
+# View database schema
+sqlite3 data/vthreadmq.db ".schema"
+
+# Check message count
+sqlite3 data/vthreadmq.db "SELECT COUNT(*) FROM messages;"
+
+# View recent messages
+sqlite3 data/vthreadmq.db "SELECT * FROM messages ORDER BY created_at DESC LIMIT 10;"
+
+# Backup database
+cp data/vthreadmq.db data/vthreadmq-backup-$(date +%Y%m%d_%H%M%S).db
+
+# Reset database (caution: deletes all data)
+rm data/vthreadmq.db
+```
+
+### Performance Testing Commands
+
+```bash
+# Produce test messages (requires curl and jq)
+for i in {1..100}; do
+  curl -s -X POST "http://localhost:8080/api/produce" \
+    -H "Content-Type: application/json" \
+    -d "{\"topic\":\"test\",\"content\":\"Message $i\"}" > /dev/null
+  echo "Sent message $i"
+done
+
+# Consume test messages
+curl "http://localhost:8080/api/consume?topic=test&maxMessages=50"
+
+# Stress test with Apache Bench (if installed)
+ab -n 1000 -c 10 -p payload.json -T application/json http://localhost:8080/api/produce
+
+# Example payload.json for stress testing
+echo '{"topic":"stress-test","content":"Load test message"}' > payload.json
+```
+
+### Logging Commands
+
+```bash
+# Follow application logs (if using systemd)
+journalctl -u vthreadmq -f
+
+# View logs with Docker
+docker logs -f vthreadmq-container
+
+# View logs with Docker Compose
+docker-compose logs -f vthreadmq
+
+# Enable debug logging
+java -jar -Dlogging.level.com.vthreadMQ001=DEBUG build/libs/vthreadmq-0.0.1-SNAPSHOT.jar
+
+# Log to file
+java -jar -Dlogging.file.name=logs/vthreadmq.log build/libs/vthreadmq-0.0.1-SNAPSHOT.jar
+```
+
+### Useful One-liners
+
+```bash
+# Check if application is running
+curl -f http://localhost:8080/api/health && echo "Application is healthy"
+
+# Get message count by topic
+curl -s "http://localhost:8080/actuator/metrics" | jq '.availableMetrics[]' | grep message
+
+# Quick smoke test
+curl -X POST "http://localhost:8080/api/produce" -H "Content-Type: application/json" -d '{"topic":"test","content":"Hello"}' && curl "http://localhost:8080/api/consume?topic=test&maxMessages=1"
+
+# Monitor active virtual threads
+watch -n 1 'curl -s http://localhost:8080/actuator/metrics/vthreadmq.active.virtual.threads | jq .measurements[0].value'
+
+# Check database size
+ls -lh data/vthreadmq.db
+
+# Get system resource usage
+ps aux | grep java
+```
+
+### Troubleshooting Commands
+
+```bash
+# Check Java version
+java -version
+
+# Verify Java 21 features
+java --enable-preview --version
+
+# Check port availability
+netstat -tuln | grep 8080
+
+# Kill process on port 8080 (if needed)
+lsof -ti:8080 | xargs kill -9
+
+# Check virtual thread support
+java -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI --version
+
+# Validate application.yml syntax
+java -jar build/libs/vthreadmq-0.0.1-SNAPSHOT.jar --spring.config.additional-location=./config/ --debug
+```
+
+---
+
 ## API Usage Examples
 
 ### Produce Messages

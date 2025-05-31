@@ -9,6 +9,15 @@ spring:
   webflux:
     base-path: /
 
+  datasource:
+    url: jdbc:sqlite:data/vthreadmq.db
+    driver-class-name: org.sqlite.JDBC
+    
+  # Disable JPA since you're using JDBC
+  jpa:
+    hibernate:
+      ddl-auto: none
+
 # Logging configuration
 logging:
   level:

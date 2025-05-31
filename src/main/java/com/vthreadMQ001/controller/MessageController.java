@@ -94,7 +94,7 @@ public class MessageController {
             @RequestParam String topic) {
         
         return messageQueueService.getCommittedOffset(consumerGroup, topic)
-            .map(offset -> ResponseEntity.ok(Map.of(
+            .map(offset -> ResponseEntity.ok(Map.<String, Object>of(
                 "consumerGroup", consumerGroup,
                 "topic", topic,
                 "offset", offset

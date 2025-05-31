@@ -300,12 +300,13 @@ public class SQLiteMessageRepository implements MessageRepository {
             return null;
         }
         try {
-            return objectMapper.readValue(headersJson, Map.class);
+            return objectMapper.readValue(headersJson, new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {});
         } catch (JsonProcessingException e) {
             log.warn("Failed to deserialize headers: {}", headersJson, e);
             return null;
         }
     }
+    
     
     private Message mapResultSetToMessage(ResultSet rs) throws SQLException {
         return Message.builder()

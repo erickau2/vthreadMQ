@@ -102,7 +102,7 @@ public class NotificationService {
             }
             
             try {
-                session.textMessage(notification)
+                session.send(Mono.just(session.textMessage(notification)))
                     .doOnError(error -> log.warn("Failed to send notification to session {}: {}", 
                         session.getId(), error.getMessage()))
                     .subscribe();

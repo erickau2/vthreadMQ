@@ -84,7 +84,7 @@ public class NotificationWebSocketHandler implements WebSocketHandler {
             );
             
             String responseJson = objectMapper.writeValueAsString(response);
-            session.textMessage(responseJson).subscribe();
+            session.send(Mono.just(session.textMessage(responseJson))).subscribe();
             
         } catch (Exception e) {
             log.error("Failed to send acknowledgment to session {}: {}", session.getId(), e.getMessage());
@@ -101,7 +101,7 @@ public class NotificationWebSocketHandler implements WebSocketHandler {
             );
             
             String responseJson = objectMapper.writeValueAsString(response);
-            session.textMessage(responseJson).subscribe();
+            session.send(Mono.just(session.textMessage(responseJson))).subscribe();
             
         } catch (Exception e) {
             log.error("Failed to send error to session {}: {}", session.getId(), e.getMessage());
@@ -116,7 +116,7 @@ public class NotificationWebSocketHandler implements WebSocketHandler {
             );
             
             String responseJson = objectMapper.writeValueAsString(response);
-            session.textMessage(responseJson).subscribe();
+            session.send(Mono.just(session.textMessage(responseJson))).subscribe();
             
         } catch (Exception e) {
             log.error("Failed to send pong to session {}: {}", session.getId(), e.getMessage());
